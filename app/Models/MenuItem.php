@@ -1,0 +1,15 @@
+<?php
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+class MenuItem extends Model {
+    protected $fillable = ['menu_id','parent_id','label','url','page_slug','open_new_tab','sort_order','is_active'];
+    protected $casts = ['open_new_tab' => 'boolean', 'is_active' => 'boolean'];
+    public function menu() { return $this->belongsTo(Menu::class); }
+    public function parent() { return $this->belongsTo(MenuItem::class, 'parent_id'); }
+    public function children() { return $this->hasMany(MenuItem::class, 'parent_id')->orderBy('sort_order'); }
+    public function getResolvedUrlAttribute() {
+        if ($this->url) return $this->url;
+        if ($this->page_slug) return '/' . $this->page_slug;
+        return '#';
+    }
+}
