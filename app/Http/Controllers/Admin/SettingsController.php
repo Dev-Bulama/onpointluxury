@@ -14,7 +14,7 @@ class SettingsController extends Controller {
     
     public function updateGeneral(Request $request) {
         $fields = ['site_name','site_tagline','contact_email','contact_phone','whatsapp_number',
-                   'address','currency','timezone','google_map_embed'];
+                   'address','currency','timezone','google_map_embed','logo_size'];
         foreach ($fields as $field) {
             Setting::set($field, $request->input($field), 'general');
         }

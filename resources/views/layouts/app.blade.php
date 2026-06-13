@@ -70,9 +70,15 @@
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-center justify-between h-16">
             <!-- Logo -->
+            @php
+                $logoPath = \App\Models\Setting::get('logo');
+                $logoSize = \App\Models\Setting::get('logo_size', 'h-10');
+                $logoUrl  = $logoPath ? (str_starts_with($logoPath, 'http') ? $logoPath : asset('storage/'.$logoPath)) : null;
+                $siteName = \App\Models\Setting::get('site_name', 'Onpointluxury');
+            @endphp
             <a href="{{ route('home') }}" class="flex items-center gap-2">
-                @if(\App\Models\Setting::get('logo'))
-                    <img src="{{ asset('storage/'.\App\Models\Setting::get('logo')) }}" alt="Logo" class="h-10">
+                @if($logoUrl)
+                    <img src="{{ $logoUrl }}" alt="{{ $siteName }}" class="{{ $logoSize }} w-auto object-contain">
                 @else
                     <div class="flex items-center gap-2">
                         <div class="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center">
@@ -180,10 +186,19 @@
             <!-- Brand -->
             <div class="lg:col-span-1">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-black text-sm">OPL</span>
-                    </div>
-                    <span class="font-black text-xl text-white">Onpoint<span class="text-amber-400">luxury</span></span>
+                    @php
+                        $footerLogoPath = \App\Models\Setting::get('logo');
+                        $footerLogoSize = \App\Models\Setting::get('logo_size', 'h-10');
+                        $footerLogoUrl  = $footerLogoPath ? (str_starts_with($footerLogoPath, 'http') ? $footerLogoPath : asset('storage/'.$footerLogoPath)) : null;
+                    @endphp
+                    @if($footerLogoUrl)
+                        <img src="{{ $footerLogoUrl }}" alt="{{ \App\Models\Setting::get('site_name','Onpointluxury') }}" class="{{ $footerLogoSize }} w-auto object-contain brightness-0 invert">
+                    @else
+                        <div class="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-black text-sm">OPL</span>
+                        </div>
+                        <span class="font-black text-xl text-white">Onpoint<span class="text-amber-400">luxury</span></span>
+                    @endif
                 </div>
                 <p class="text-sm text-gray-400 leading-relaxed mb-4">{{ \App\Models\Setting::get('site_tagline', 'Premium Apartment & Hotel Bookings in Nigeria.') }}</p>
                 <div class="flex gap-3">
