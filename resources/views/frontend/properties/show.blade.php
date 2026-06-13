@@ -309,7 +309,7 @@ function bookingApp() {
         whatsappNumber: @json($whatsappNumber),
 
         get bookingUrl() {
-            return `/booking/create?property_id=${this.propertyId}&check_in=${this.checkIn}&check_out=${this.checkOut}&guests=${this.guests}`;
+            return `/booking/${this.propertyId}?check_in=${this.checkIn}&check_out=${this.checkOut}&guests=${this.guests}`;
         },
 
         get whatsappUrl() {

@@ -8,7 +8,7 @@ class BlogController extends Controller
     public function index()
     {
         $posts = BlogPost::with('author')
-            ->where('status', 'published')
+            ->where('is_published', true)
             ->latest('published_at')
             ->paginate(9);
         return view('frontend.blog.index', compact('posts'));
@@ -18,11 +18,11 @@ class BlogController extends Controller
     {
         $post = BlogPost::with('author')
             ->where('slug', $slug)
-            ->where('status', 'published')
+            ->where('is_published', true)
             ->firstOrFail();
 
         $related = BlogPost::where('id', '!=', $post->id)
-            ->where('status', 'published')
+            ->where('is_published', true)
             ->latest('published_at')
             ->take(3)->get();
 

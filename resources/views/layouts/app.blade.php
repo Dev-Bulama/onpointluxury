@@ -214,5 +214,46 @@
 
 {!! \App\Models\Setting::get('footer_scripts') !!}
 @stack('scripts')
+
+{{-- Mobile Bottom Navigation --}}
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 md:hidden safe-area-bottom">
+    <div class="flex items-center justify-around h-16">
+        <a href="{{ route('home') }}" class="flex flex-col items-center gap-0.5 px-3 py-2 {{ request()->routeIs('home') ? 'text-amber-500' : 'text-gray-500' }}">
+            <i class="fas fa-home text-lg"></i>
+            <span class="text-xs font-medium">Home</span>
+        </a>
+        <a href="{{ route('properties.index') }}" class="flex flex-col items-center gap-0.5 px-3 py-2 {{ request()->routeIs('properties.index') ? 'text-amber-500' : 'text-gray-500' }}">
+            <i class="fas fa-search text-lg"></i>
+            <span class="text-xs font-medium">Search</span>
+        </a>
+        <a href="{{ route('properties.index') }}" class="flex flex-col items-center gap-0.5 px-3 py-2 {{ request()->routeIs('properties.*') && !request()->routeIs('properties.index') ? 'text-amber-500' : 'text-gray-500' }}">
+            <i class="fas fa-building text-lg"></i>
+            <span class="text-xs font-medium">Properties</span>
+        </a>
+        @auth
+        <a href="{{ auth()->user()->isAdmin() || auth()->user()->isManager() ? route('admin.bookings.index') : route('client.bookings') }}"
+           class="flex flex-col items-center gap-0.5 px-3 py-2 {{ request()->routeIs('client.bookings*') || request()->routeIs('admin.bookings*') ? 'text-amber-500' : 'text-gray-500' }}">
+            <i class="fas fa-calendar-check text-lg"></i>
+            <span class="text-xs font-medium">Bookings</span>
+        </a>
+        @else
+        <a href="{{ route('login') }}" class="flex flex-col items-center gap-0.5 px-3 py-2 text-gray-500">
+            <i class="fas fa-calendar-check text-lg"></i>
+            <span class="text-xs font-medium">Bookings</span>
+        </a>
+        @endauth
+        <a href="https://wa.me/{{ \App\Models\Setting::get('whatsapp_number','2348012345678') }}" target="_blank"
+           class="flex flex-col items-center gap-0.5 px-3 py-2 text-green-600">
+            <i class="fab fa-whatsapp text-lg"></i>
+            <span class="text-xs font-medium">WhatsApp</span>
+        </a>
+    </div>
+</nav>
+<style>
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    }
+    @media (max-width: 767px) { body { padding-bottom: 4rem; } }
+</style>
 </body>
 </html>

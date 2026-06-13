@@ -32,7 +32,7 @@
 </div>
 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
 <h3 class="font-semibold text-gray-800 mb-4">Send Test Email</h3>
-<form method="POST" action="{{ route('admin.settings.smtp.test') }}">
+<form method="POST" action="{{ route('admin.settings.smtp.update') }}">
 @csrf
 <div class="flex gap-3">
 <input type="email" name="test_email" placeholder="test@example.com" required class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">

@@ -11,17 +11,24 @@ class DashboardController extends Controller
         $user = auth()->user();
         $propertyIds = Property::where('user_id', $user->id)->pluck('id');
 
+        $assignedPropertiesCount = $propertyIds->count();
+        $activeBookings  = Booking::whereIn('property_id', $propertyIds)->whereIn('booking_status', ['confirmed','checked_in'])->count();
+        $pendingBookings = Booking::whereIn('property_id', $propertyIds)->where('booking_status', 'pending')->count();
+        $totalRevenue    = Booking::whereIn('property_id', $propertyIds)->where('payment_status', 'paid')->sum('total_amount');
+
         $stats = [
-            'properties' => $propertyIds->count(),
+            'properties' => $assignedPropertiesCount,
             'bookings'   => Booking::whereIn('property_id', $propertyIds)->count(),
-            'pending'    => Booking::whereIn('property_id', $propertyIds)->where('booking_status', 'pending')->count(),
-            'revenue'    => Booking::whereIn('property_id', $propertyIds)->where('payment_status', 'paid')->sum('total_amount'),
+            'pending'    => $pendingBookings,
+            'revenue'    => $totalRevenue,
         ];
 
-        $recent = Booking::with('property')
+        $recent = $recentBookings = Booking::with('property')
             ->whereIn('property_id', $propertyIds)
             ->latest()->take(10)->get();
 
-        return view('manager.dashboard', compact('stats', 'recent'));
+        $assignedProperties = $assignedPropertiesCount;
+
+        return view('manager.dashboard', compact('stats', 'recent', 'recentBookings', 'assignedProperties', 'activeBookings', 'pendingBookings', 'totalRevenue'));
     }
 }

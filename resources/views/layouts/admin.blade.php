@@ -86,7 +86,7 @@
            class="sidebar-link {{ request()->routeIs('admin.properties.*') ? 'active' : '' }}">
             <i class="fas fa-building w-4 text-center"></i> Properties
         </a>
-        <a href="{{ route('admin.rooms.index') }}"
+        <a href="{{ route('admin.properties.index') }}?view=rooms"
            class="sidebar-link {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
             <i class="fas fa-door-open w-4 text-center"></i> Rooms & Units
         </a>

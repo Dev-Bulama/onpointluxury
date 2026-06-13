@@ -8,7 +8,7 @@ class Booking extends Model {
         'booking_reference','user_id','property_id','room_id','check_in_date','check_out_date',
         'nights','guests','price_per_night','subtotal','discount','tax','service_charge','total_amount',
         'payment_status','booking_status','customer_name','customer_email','customer_phone',
-        'special_request','source'
+        'special_request','source','payment_method'
     ];
     protected $casts = ['check_in_date'=>'date','check_out_date'=>'date'];
 

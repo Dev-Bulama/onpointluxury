@@ -1,24 +1,42 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\{Property, PropertyType, Testimonial, BlogPost};
+use App\Models\{Property, PropertyType, Testimonial, BlogPost, Booking, User};
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $featured = Property::with(['type', 'category'])
+        $featuredProperties = Property::with(['propertyType', 'propertyCategory', 'images'])
             ->where('status', 'published')
             ->where('is_featured', true)
-            ->take(6)->get();
+            ->latest()->take(8)->get();
 
-        $types = PropertyType::withCount(['properties' => fn($q) => $q->where('status','published')])
+        $allProperties = Property::with(['propertyType', 'propertyCategory', 'images'])
+            ->where('status', 'published')
+            ->latest()->take(6)->get();
+
+        $propertyTypes = PropertyType::where('is_active', true)
+            ->withCount(['properties' => fn($q) => $q->where('status', 'published')])
             ->having('properties_count', '>', 0)
-            ->take(8)->get();
+            ->take(10)->get();
 
-        $testimonials = Testimonial::where('status', 'active')->take(6)->get();
-        $blog = BlogPost::where('status', 'published')->latest('published_at')->take(3)->get();
+        $testimonials = Testimonial::where('is_active', true)
+            ->orderBy('sort_order')->take(6)->get();
 
-        return view('frontend.home', compact('featured', 'types', 'testimonials', 'blog'));
+        $blogPosts = BlogPost::where('is_published', true)
+            ->latest('published_at')->take(3)->get();
+
+        $stats = [
+            'properties' => Property::where('status', 'published')->count() ?: 50,
+            'bookings'   => Booking::count() ?: 200,
+            'clients'    => User::where('role', 'client')->count() ?: 150,
+            'cities'     => 5,
+        ];
+
+        return view('frontend.home', compact(
+            'featuredProperties', 'allProperties', 'propertyTypes',
+            'testimonials', 'blogPosts', 'stats'
+        ));
     }
 }

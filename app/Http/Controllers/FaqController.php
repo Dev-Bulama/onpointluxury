@@ -7,7 +7,8 @@ class FaqController extends Controller
 {
     public function index()
     {
-        $faqs = Faq::where('is_active', true)->orderBy('sort_order')->get()->groupBy('category');
-        return view('frontend.faq', compact('faqs'));
+        $grouped = Faq::where('is_active', true)->orderBy('sort_order')->get()->groupBy('category');
+        $faqs = $grouped->flatten();
+        return view('frontend.faq', compact('faqs', 'grouped'));
     }
 }
