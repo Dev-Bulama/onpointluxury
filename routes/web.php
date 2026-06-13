@@ -32,6 +32,13 @@ Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
+// Clean URL aliases for CMS pages
+Route::get('/about', [PageController::class, 'show'])->defaults('slug', 'about')->name('about');
+Route::get('/privacy', [PageController::class, 'show'])->defaults('slug', 'privacy')->name('privacy');
+Route::get('/privacy-policy', [PageController::class, 'show'])->defaults('slug', 'privacy')->name('privacy-policy');
+Route::get('/terms', [PageController::class, 'show'])->defaults('slug', 'terms')->name('terms');
+Route::get('/refund-policy', [PageController::class, 'show'])->defaults('slug', 'refund-policy')->name('refund-policy');
+
 // Booking
 Route::get('/booking/{property}', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');

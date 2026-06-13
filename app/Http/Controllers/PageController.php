@@ -7,7 +7,7 @@ class PageController extends Controller
 {
     public function show($slug)
     {
-        $page = Page::where('slug', $slug)->where('status', 'published')->firstOrFail();
+        $page = Page::where('slug', $slug)->where('is_published', true)->firstOrFail();
         return view('frontend.page', compact('page'));
     }
 }

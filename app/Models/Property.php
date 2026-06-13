@@ -39,9 +39,15 @@ class Property extends Model {
 
     public function getFeaturedImageUrlAttribute() {
         if ($this->featured_image) {
+            if (str_starts_with($this->featured_image, 'http://') || str_starts_with($this->featured_image, 'https://')) {
+                return $this->featured_image;
+            }
             return asset('storage/' . $this->featured_image);
         }
-        return asset('images/property-placeholder.jpg');
+        // Fall back to first gallery image
+        $first = $this->images->first();
+        if ($first) return $first->image_url;
+        return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
     }
 
     public function isAvailable($checkIn, $checkOut) {

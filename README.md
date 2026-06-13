@@ -1,58 +1,281 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# On Point Luxury
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Premium Apartment & Hotel Bookings in Nigeria**
 
-## About Laravel
+On Point Luxury is a full-featured luxury property booking platform built with Laravel 11. It allows guests to discover and book premium short-let apartments, serviced residences, and boutique hotels across Lagos, Abuja, and Port Harcourt — with secure Paystack payment integration and WhatsApp inquiry support.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Property Listings** — Browse, filter, and search properties by type, location, guests, price, and bedrooms
+- **Secure Bookings** — Full booking flow with server-side Paystack payment verification
+- **WhatsApp Integration** — One-tap WhatsApp booking and inquiry with dynamic pre-filled messages
+- **Role-Based Access** — Admin, Manager, and Client dashboards
+- **CMS** — Manage pages, menus, blog posts, FAQs, and testimonials from the admin panel
+- **Mobile-Ready** — Fully responsive with fixed mobile bottom navigation
+- **Email Notifications** — Booking confirmation emails (graceful SMTP fallback)
+- **Admin Panel** — Complete property, booking, payment, and user management
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Requirements
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.3 or higher
+- MySQL 8.0+ or MariaDB 10.6+
+- Composer 2.x
+- Node.js (optional — only if compiling custom assets; project uses Tailwind CDN)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Installation
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clone the Repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/dev-bulama/onpointluxury.git
+cd onpointluxury
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Install PHP Dependencies
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Copy Environment File
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Configure Database
 
-## Security Vulnerabilities
+Edit `.env` and set your database credentials:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=onpointluxury
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+```
+
+### 5. Run Migrations and Seed
+
+```bash
+php artisan migrate --seed
+```
+
+This creates all tables and seeds:
+- 3 default users (admin, manager, client)
+- 12 luxury properties with images
+- Property types, categories, and amenities
+- FAQs, testimonials, blog posts
+- CMS pages (About, Privacy, Terms, etc.)
+- Default site settings
+
+### 6. Link Storage
+
+```bash
+php artisan storage:link
+```
+
+### 7. Start Development Server
+
+```bash
+php artisan serve
+```
+
+Visit: [http://localhost:8000](http://localhost:8000)
+
+---
+
+## Login Credentials
+
+After running `php artisan migrate --seed`, use these credentials:
+
+| Role    | Email                        | Password | Dashboard URL         |
+|---------|------------------------------|----------|-----------------------|
+| Admin   | admin@onpointluxury.com      | password | /admin/dashboard      |
+| Manager | manager@onpointluxury.com    | password | /manager/dashboard    |
+| Client  | client@onpointluxury.com     | password | /client/dashboard     |
+
+> **IMPORTANT:** Change all passwords immediately after first login in production.
+
+---
+
+## Environment Setup
+
+### Paystack Payment Gateway
+
+1. Sign up at [paystack.com](https://paystack.com)
+2. Get your test/live API keys
+3. Go to Admin Panel → Settings → Paystack
+4. Enter your Public Key and Secret Key
+5. Set mode to `test` for development, `live` for production
+
+Or set in `.env`:
+
+```env
+PAYSTACK_PUBLIC_KEY=pk_test_xxxxxxxxxxxxxxxxxxxx
+PAYSTACK_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxx
+```
+
+### SMTP Email
+
+Go to Admin Panel → Settings → SMTP, or set in `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your@email.com
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=hello@onpointluxury.com
+MAIL_FROM_NAME="On Point Luxury"
+```
+
+> If SMTP is not configured, email sending fails silently (booking still processes normally).
+
+### WhatsApp
+
+Go to Admin Panel → Settings → WhatsApp and enter your WhatsApp number in international format without the `+` sign (e.g., `2348012345678`).
+
+---
+
+## Deployment
+
+### Production Deployment
+
+Run the deployment script:
+
+```bash
+bash deploy.sh
+```
+
+This script:
+1. Installs production PHP dependencies
+2. Enables maintenance mode
+3. Clears all caches
+4. Runs database migrations
+5. Seeds the database (idempotent)
+6. Links storage
+7. Rebuilds config, route, and view caches
+8. Brings the site back online
+
+### Fresh Install (Development Only)
+
+> WARNING: This destroys all database data. Use in dev only.
+
+```bash
+bash fresh-install.sh
+```
+
+---
+
+## Important Routes
+
+| Route                  | Description                    |
+|------------------------|--------------------------------|
+| `/`                    | Homepage                       |
+| `/properties`          | Browse all properties          |
+| `/properties/{slug}`   | Property detail & booking      |
+| `/booking/{property}`  | Booking form                   |
+| `/payment/callback`    | Paystack payment callback      |
+| `/contact`             | Contact form                   |
+| `/about`               | About page                     |
+| `/blog`                | Blog listing                   |
+| `/login`               | Login (all roles)              |
+| `/register`            | New client registration        |
+| `/admin/dashboard`     | Admin panel                    |
+| `/manager/dashboard`   | Manager panel                  |
+| `/client/dashboard`    | Client dashboard               |
+
+---
+
+## Admin Panel Sections
+
+- **Dashboard** — Key metrics and recent activity
+- **Properties** — Full property CRUD with image management
+- **Bookings** — View, update, and manage all bookings
+- **Payments** — Payment history and verification
+- **Users** — Manage admins, managers, and clients
+- **Blog** — Create and manage blog posts
+- **FAQs** — Manage frequently asked questions
+- **Testimonials** — Curate guest testimonials
+- **Pages** — CMS for About, Privacy, Terms, etc.
+- **Menus** — Manage header and footer navigation
+- **Messages** — View contact form submissions
+- **Settings** — General, Paystack, SMTP, WhatsApp, SEO, Booking
+
+---
+
+## Troubleshooting
+
+### 500 Internal Server Error
+
+```bash
+php artisan optimize:clear
+tail -50 storage/logs/laravel.log
+```
+
+### Sessions Not Working
+
+```bash
+php artisan session:table
+php artisan migrate
+```
+
+### Storage Images Not Showing
+
+```bash
+php artisan storage:link
+```
+
+### Database Connection Refused
+
+Ensure MySQL/MariaDB is running:
+
+```bash
+sudo service mysql start
+```
+
+### Cache Issues After Code Changes
+
+```bash
+php artisan optimize:clear
+php artisan view:clear
+```
+
+---
+
+## Production Notes
+
+1. Set `APP_ENV=production` and `APP_DEBUG=false` in `.env`
+2. Use a proper web server (Nginx or Apache) — not `php artisan serve`
+3. Set up SSL/HTTPS (required for Paystack in live mode)
+4. Change all default passwords before launch
+5. Replace Paystack test keys with live keys before accepting real payments
+6. Configure real SMTP credentials for email delivery
+7. Set up regular database backups
+
+---
+
+## Tech Stack
+
+- **Backend:** Laravel 11 (PHP 8.3+)
+- **Database:** MySQL / MariaDB
+- **Frontend:** TailwindCSS CDN + Alpine.js
+- **Icons:** Font Awesome 6
+- **Payments:** Paystack
+- **Fonts:** Inter (Google Fonts)
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License. Built for On Point Luxury.
