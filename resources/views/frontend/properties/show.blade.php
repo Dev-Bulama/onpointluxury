@@ -23,23 +23,29 @@
         <div class="lg:col-span-2">
 
             <!-- Gallery -->
-            <div class="rounded-2xl overflow-hidden mb-6" x-data="{ activeImg: '{{ $property->featured_image ? asset('storage/'.$property->featured_image) : '' }}' }">
+            @php
+                $mainImg = $property->featured_image_url ?? 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80';
+                $fallback = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
+            @endphp
+            <div class="rounded-2xl overflow-hidden mb-6" x-data="{ activeImg: '{{ $mainImg }}' }">
                 <div class="h-80 md:h-[420px] bg-gray-100 overflow-hidden rounded-2xl">
-                    <img :src="activeImg || '{{ asset('images/property-placeholder.jpg') }}'"
-                         alt="{{ $property->name }}" class="w-full h-full object-cover">
+                    <img :src="activeImg"
+                         alt="{{ $property->name }}"
+                         class="w-full h-full object-cover"
+                         onerror="this.onerror=null;this.src='{{ $fallback }}'">
                 </div>
                 @if($property->images->count())
                 <div class="flex gap-2 mt-3 overflow-x-auto pb-1">
-                    @if($property->featured_image)
-                    <button @click="activeImg='{{ asset('storage/'.$property->featured_image) }}'"
+                    <button @click="activeImg='{{ $mainImg }}'"
                             class="flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 border-amber-500">
-                        <img src="{{ asset('storage/'.$property->featured_image) }}" class="w-full h-full object-cover">
+                        <img src="{{ $mainImg }}" class="w-full h-full object-cover"
+                             onerror="this.onerror=null;this.src='{{ $fallback }}'">
                     </button>
-                    @endif
                     @foreach($property->images as $img)
-                    <button @click="activeImg='{{ asset('storage/'.$img->image) }}'"
+                    <button @click="activeImg='{{ $img->image_url }}'"
                             class="flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 border-transparent hover:border-amber-400 transition-colors">
-                        <img src="{{ asset('storage/'.$img->image) }}" class="w-full h-full object-cover">
+                        <img src="{{ $img->image_url }}" class="w-full h-full object-cover"
+                             onerror="this.onerror=null;this.src='{{ $fallback }}'">
                     </button>
                     @endforeach
                 </div>

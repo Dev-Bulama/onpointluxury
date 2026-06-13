@@ -21,13 +21,13 @@
         </div>
 
         <!-- Search Card -->
-        <div class="bg-white rounded-2xl p-5 shadow-2xl max-w-5xl">
+        <div class="bg-white rounded-2xl p-5 shadow-2xl w-full max-w-5xl mx-auto">
             <form action="{{ route('properties.index') }}" method="GET">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                    <div class="lg:col-span-1">
+                    <div class="sm:col-span-2 lg:col-span-1">
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Location</label>
                         <div class="relative">
-                            <i class="fas fa-map-marker-alt absolute left-3 top-3 text-amber-400 text-sm"></i>
+                            <i class="fas fa-map-marker-alt absolute left-3 top-3 text-amber-400 text-sm pointer-events-none"></i>
                             <input type="text" name="location" placeholder="Lagos, Abuja..." value="{{ request('location') }}"
                                    class="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
                         </div>
@@ -35,31 +35,33 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Check-in</label>
                         <div class="relative">
-                            <i class="fas fa-calendar absolute left-3 top-3 text-amber-400 text-sm"></i>
-                            <input type="date" name="check_in" id="hero_checkin" min="{{ date('Y-m-d') }}"
-                                   class="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
+                            <i class="fas fa-calendar absolute left-3 top-3 text-amber-400 text-sm pointer-events-none"></i>
+                            <input type="date" name="check_in" min="{{ date('Y-m-d') }}"
+                                   value="{{ request('check_in') }}"
+                                   class="w-full pl-8 pr-2 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Check-out</label>
                         <div class="relative">
-                            <i class="fas fa-calendar-check absolute left-3 top-3 text-amber-400 text-sm"></i>
-                            <input type="date" name="check_out" id="hero_checkout"
-                                   class="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
+                            <i class="fas fa-calendar-check absolute left-3 top-3 text-amber-400 text-sm pointer-events-none"></i>
+                            <input type="date" name="check_out"
+                                   value="{{ request('check_out') }}"
+                                   class="w-full pl-8 pr-2 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Guests</label>
                         <div class="relative">
-                            <i class="fas fa-users absolute left-3 top-3 text-amber-400 text-sm"></i>
+                            <i class="fas fa-users absolute left-3 top-3 text-amber-400 text-sm pointer-events-none"></i>
                             <select name="guests" class="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
                                 @for($i=1;$i<=10;$i++)
-                                <option value="{{ $i }}">{{ $i }} Guest{{ $i>1?'s':'' }}</option>
+                                <option value="{{ $i }}" {{ request('guests', 1) == $i ? 'selected' : '' }}>{{ $i }} Guest{{ $i>1?'s':'' }}</option>
                                 @endfor
                             </select>
                         </div>
                     </div>
-                    <div class="flex items-end">
+                    <div class="flex items-end sm:col-span-2 lg:col-span-1">
                         <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
                             <i class="fas fa-search"></i> Search
                         </button>

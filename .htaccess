@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the domain root points to the project root instead of /public,
+    # rewrite all requests to the /public folder.
+    # This is the standard fix for shared hosting where you cannot change
+    # the document root to point directly to /public.
+
+    # Do not rewrite if already inside /public
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>

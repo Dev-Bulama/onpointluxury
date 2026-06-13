@@ -7,11 +7,19 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- Header --}}
-        <div class="mb-8">
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">
-                Welcome back, <span class="text-amber-500">{{ auth()->user()->name }}</span>
-            </h1>
-            <p class="text-slate-500 mt-1">Here's an overview of your bookings and activity.</p>
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">
+                    Welcome back, <span class="text-amber-500">{{ auth()->user()->name }}</span>
+                </h1>
+                <p class="text-slate-500 mt-1">Here's an overview of your bookings and activity.</p>
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex items-center gap-2 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-200 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
         </div>
 
         {{-- Stats Cards --}}

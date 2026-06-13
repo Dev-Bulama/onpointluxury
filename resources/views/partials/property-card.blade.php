@@ -1,13 +1,13 @@
 <div class="property-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300">
     <a href="{{ route('properties.show', $property->slug) }}" class="block relative overflow-hidden h-52">
-        @if($property->featured_image)
-        <img src="{{ asset('storage/'.$property->featured_image) }}" alt="{{ $property->name }}"
-             class="property-img w-full h-full object-cover">
-        @else
-        <div class="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
-            <i class="fas fa-building text-white text-4xl opacity-30"></i>
-        </div>
-        @endif
+        @php
+            $imgSrc = $property->featured_image_url ?? 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
+        @endphp
+        <img src="{{ $imgSrc }}"
+             alt="{{ $property->name }}"
+             class="property-img w-full h-full object-cover"
+             loading="lazy"
+             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80'">
         @if($property->is_featured)
         <span class="absolute top-3 left-3 bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">Featured</span>
         @endif

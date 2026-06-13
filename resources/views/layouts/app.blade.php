@@ -30,6 +30,15 @@
         .property-card:hover .property-img { transform: scale(1.05); }
         .property-img { transition: transform 0.4s ease; }
         html { scroll-behavior: smooth; }
+        /* Global overflow protection */
+        html, body { max-width: 100%; overflow-x: hidden; }
+        *, *::before, *::after { box-sizing: border-box; }
+        img, video, iframe { max-width: 100%; height: auto; }
+        table { width: 100%; }
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        }
+        @media (max-width: 767px) { body { padding-bottom: 4rem; } }
     </style>
     {!! \App\Models\Setting::get('header_scripts') !!}
 </head>
@@ -115,20 +124,32 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div x-show="mobileMenu" x-cloak class="lg:hidden border-t border-gray-100 bg-white py-4 px-4 space-y-3">
-        <a href="{{ route('home') }}" class="block text-sm font-medium text-gray-700 py-2">Home</a>
-        <a href="{{ route('properties.index') }}" class="block text-sm font-medium text-gray-700 py-2">Properties</a>
-        <a href="{{ route('blog.index') }}" class="block text-sm font-medium text-gray-700 py-2">Blog</a>
-        <a href="{{ route('faq') }}" class="block text-sm font-medium text-gray-700 py-2">FAQ</a>
-        <a href="{{ route('contact') }}" class="block text-sm font-medium text-gray-700 py-2">Contact</a>
-        <div class="pt-3 flex gap-3">
-            @auth
-                <a href="{{ route('client.dashboard') }}" class="flex-1 text-center bg-slate-900 text-white py-2 rounded-lg text-sm">Dashboard</a>
-            @else
-                <a href="{{ route('login') }}" class="flex-1 text-center border border-gray-300 py-2 rounded-lg text-sm">Login</a>
-                <a href="{{ route('register') }}" class="flex-1 text-center bg-amber-500 text-white py-2 rounded-lg text-sm">Register</a>
-            @endauth
+    <div x-show="mobileMenu" x-cloak class="lg:hidden border-t border-gray-100 bg-white py-4 px-4 space-y-1">
+        <a href="{{ route('home') }}" class="block text-sm font-medium text-gray-700 py-2 border-b border-gray-50">Home</a>
+        <a href="{{ route('properties.index') }}" class="block text-sm font-medium text-gray-700 py-2 border-b border-gray-50">Properties</a>
+        <a href="{{ route('blog.index') }}" class="block text-sm font-medium text-gray-700 py-2 border-b border-gray-50">Blog</a>
+        <a href="{{ route('faq') }}" class="block text-sm font-medium text-gray-700 py-2 border-b border-gray-50">FAQ</a>
+        <a href="{{ route('contact') }}" class="block text-sm font-medium text-gray-700 py-2 border-b border-gray-50">Contact</a>
+        @auth
+        <a href="{{ route('about') }}" class="block text-sm font-medium text-gray-700 py-2 border-b border-gray-50">About</a>
+        <div class="pt-3 space-y-2">
+            <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isManager() ? route('manager.dashboard') : route('client.dashboard')) }}"
+               class="block w-full text-center bg-slate-900 text-white py-2.5 rounded-lg text-sm font-medium">
+                <i class="fas fa-tachometer-alt mr-1"></i> My Dashboard
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full text-center bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </button>
+            </form>
         </div>
+        @else
+        <div class="pt-3 flex gap-3">
+            <a href="{{ route('login') }}" class="flex-1 text-center border border-gray-300 py-2 rounded-lg text-sm">Login</a>
+            <a href="{{ route('register') }}" class="flex-1 text-center bg-amber-500 text-white py-2 rounded-lg text-sm">Register</a>
+        </div>
+        @endauth
     </div>
 </nav>
 
@@ -249,11 +270,5 @@
         </a>
     </div>
 </nav>
-<style>
-    @supports (padding-bottom: env(safe-area-inset-bottom)) {
-        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
-    }
-    @media (max-width: 767px) { body { padding-bottom: 4rem; } }
-</style>
 </body>
 </html>
