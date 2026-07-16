@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use App\Models\{Property, PropertyType, PropertyCategory, Amenity, User};
+use App\Models\{Property, PropertyImage, PropertyType, PropertyCategory, Amenity, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -103,6 +103,25 @@ class PropertyController extends Controller {
         return redirect()->route('admin.properties.index')->with('success','Property deleted.');
     }
     
+    public function destroyImage(Property $property, PropertyImage $image)
+    {
+        if ($image->property_id !== $property->id) abort(403);
+        if (!str_starts_with($image->image, 'http')) {
+            Storage::disk('public')->delete($image->image);
+        }
+        $image->delete();
+        return response()->json(['success' => true]);
+    }
+
+    public function reorderImages(Request $request, Property $property)
+    {
+        foreach ($request->order ?? [] as $sort => $id) {
+            PropertyImage::where('id', $id)->where('property_id', $property->id)
+                ->update(['sort_order' => $sort]);
+        }
+        return response()->json(['success' => true]);
+    }
+
     public function show(Property $property) {
         $property->load(['propertyType','propertyCategory','amenities','images','rooms','manager','bookings','reviews']);
         return view('admin.properties.show', compact('property'));

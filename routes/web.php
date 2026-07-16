@@ -78,6 +78,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Properties
     Route::resource('properties', AdminProperty::class);
+    Route::delete('/properties/{property}/images/{image}', [AdminProperty::class, 'destroyImage'])->name('properties.images.destroy');
+    Route::post('/properties/{property}/images/reorder', [AdminProperty::class, 'reorderImages'])->name('properties.images.reorder');
 
     // Rooms
     Route::resource('properties.rooms', AdminRoom::class)->shallow();

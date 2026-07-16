@@ -57,5 +57,71 @@
 </div>
 </form>
 </div>
+
+{{-- Hero Slides Manager --}}
+@php
+$heroSlides = json_decode($settings['hero_slides'] ?? '[]', true) ?: [];
+@endphp
+<div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mt-6" x-data="heroSlides({{ json_encode($heroSlides) }})">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h3 class="font-semibold text-gray-800">Hero Slideshow Images</h3>
+            <p class="text-xs text-gray-400 mt-0.5">These images auto-slide on the homepage hero section.</p>
+        </div>
+        <button type="button" @click="addSlide()" class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700">
+            + Add Slide
+        </button>
+    </div>
+
+    {{-- Slide list --}}
+    <div class="space-y-3 mb-4">
+        <template x-for="(slide, i) in slides" :key="i">
+            <div class="flex gap-3 items-start p-3 border border-gray-200 rounded-lg bg-gray-50">
+                <div class="flex-shrink-0 w-20 h-14 rounded overflow-hidden bg-gray-200">
+                    <img :src="slide.url" class="w-full h-full object-cover"
+                         x-show="slide.url"
+                         onerror="this.style.display='none'">
+                </div>
+                <div class="flex-1 space-y-2">
+                    <input type="text"
+                           x-model="slide.url"
+                           placeholder="https://... (image URL)"
+                           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500">
+                    <input type="text"
+                           x-model="slide.caption"
+                           placeholder="Caption (optional)"
+                           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm">
+                </div>
+                <button type="button" @click="removeSlide(i)"
+                        class="text-red-400 hover:text-red-600 text-lg font-bold flex-shrink-0 mt-1">×</button>
+            </div>
+        </template>
+        <p x-show="slides.length === 0" class="text-sm text-gray-400 text-center py-4">
+            No slides added. Click "+ Add Slide" to add hero background images.
+        </p>
+    </div>
+
+    <form method="POST" action="{{ route('admin.settings.general.update') }}">
+        @csrf
+        <input type="hidden" name="hero_slides" :value="JSON.stringify(slides)">
+        <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
+            Save Hero Slides
+        </button>
+    </form>
 </div>
+</div>
+
+<script>
+function heroSlides(initial) {
+    return {
+        slides: initial.length ? initial : [],
+        addSlide() {
+            this.slides.push({ url: '', caption: '' });
+        },
+        removeSlide(i) {
+            this.slides.splice(i, 1);
+        }
+    }
+}
+</script>
 @endsection

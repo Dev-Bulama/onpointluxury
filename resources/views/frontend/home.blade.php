@@ -4,10 +4,43 @@
 @section('content')
 
 <!-- HERO SECTION -->
-<section class="relative bg-slate-900 min-h-[88vh] flex items-center overflow-hidden">
-    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1600')] bg-cover bg-center opacity-30"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/80"></div>
-    <div class="relative max-w-7xl mx-auto px-4 py-24 w-full">
+@php
+$heroSlides = json_decode(\App\Models\Setting::get('hero_slides', '[]'), true);
+if (empty($heroSlides)) {
+    $heroSlides = [
+        ['url' => 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1600', 'caption' => ''],
+        ['url' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600', 'caption' => ''],
+        ['url' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600', 'caption' => ''],
+    ];
+}
+@endphp
+<section class="relative bg-slate-900 min-h-[88vh] flex items-center overflow-hidden"
+    x-data="{
+        idx: 0,
+        slides: {{ json_encode(array_column($heroSlides, 'url')) }},
+        timer: null,
+        init() { this.timer = setInterval(() => { this.idx = (this.idx + 1) % this.slides.length; }, 5000); }
+    }"
+    x-init="init()">
+
+    {{-- Slide backgrounds --}}
+    <template x-for="(src, i) in slides" :key="i">
+        <div :class="{'opacity-30': idx===i, 'opacity-0': idx!==i}"
+             class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+             :style="`background-image:url('${src}')`"></div>
+    </template>
+
+    {{-- Slide dots --}}
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20" x-show="slides.length > 1">
+        <template x-for="(s, i) in slides" :key="i">
+            <button @click="idx=i; clearInterval(timer); init()"
+                    :class="idx===i ? 'bg-amber-400 w-6' : 'bg-white/50 w-2'"
+                    class="h-2 rounded-full transition-all duration-300"></button>
+        </template>
+    </div>
+
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/80 z-10"></div>
+    <div class="relative z-20 max-w-7xl mx-auto px-4 py-24 w-full">
         <div class="max-w-3xl mb-10">
             <div class="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-500/40 text-amber-300 text-sm px-4 py-2 rounded-full mb-6">
                 <i class="fas fa-star text-amber-400"></i> Nigeria's #1 Luxury Booking Platform

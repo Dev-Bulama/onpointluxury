@@ -110,20 +110,65 @@
 </div></div>
 <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
 <h3 class="font-semibold text-gray-800 mb-3">Featured Image</h3>
-@if($property->featured_image)
-<img src="{{ asset('storage/'.$property->featured_image) }}" class="w-full h-32 object-cover rounded-lg mb-3">
-@endif
-<input type="file" name="featured_image" accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs"></div>
-<div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-<h3 class="font-semibold text-gray-800 mb-3">Gallery</h3>
-@if($property->images->count())
-<div class="grid grid-cols-3 gap-2 mb-3">
-@foreach($property->images as $img)
-<img src="{{ asset('storage/'.$img->image) }}" class="w-full h-16 object-cover rounded">
-@endforeach
+@if($property->featured_image_url)
+<div class="relative mb-3 group">
+    <img src="{{ $property->featured_image_url }}" class="w-full h-32 object-cover rounded-lg">
+    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition rounded-lg flex items-center justify-center">
+        <span class="text-white text-xs font-medium">Upload below to replace</span>
+    </div>
 </div>
 @endif
-<input type="file" name="gallery[]" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs"></div>
+<label class="block text-xs text-gray-500 mb-1">Upload new featured image to replace current</label>
+<input type="file" name="featured_image" accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs">
+</div>
+<div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100" x-data="galleryManager()">
+<div class="flex items-center justify-between mb-3">
+    <h3 class="font-semibold text-gray-800">Gallery Images</h3>
+    <span class="text-xs text-gray-400">Click × to delete</span>
+</div>
+@if($property->images->count())
+<div class="grid grid-cols-3 gap-2 mb-4" id="gallery-grid">
+    @foreach($property->images->sortBy('sort_order') as $img)
+    @php $imgUrl = str_starts_with($img->image,'http') ? $img->image : asset('storage/'.$img->image); @endphp
+    <div class="relative group rounded overflow-hidden" id="img-wrap-{{ $img->id }}">
+        <img src="{{ $imgUrl }}" class="w-full h-20 object-cover">
+        <button type="button"
+            onclick="deleteGalleryImage({{ $property->id }}, {{ $img->id }}, this)"
+            class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition flex items-center justify-center hover:bg-red-600"
+            title="Delete this image">×</button>
+    </div>
+    @endforeach
+</div>
+@else
+<p class="text-sm text-gray-400 mb-3">No gallery images yet.</p>
+@endif
+<label class="block text-xs text-gray-500 mb-1">Add more images (multiple allowed)</label>
+<input type="file" name="gallery[]" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 file:text-xs">
+</div>
+
+<script>
+function deleteGalleryImage(propertyId, imageId, btn) {
+    if (!confirm('Delete this image?')) return;
+    const wrap = document.getElementById('img-wrap-' + imageId);
+    btn.disabled = true;
+    fetch(`/admin/properties/${propertyId}/images/${imageId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            wrap.style.transition = 'opacity 0.3s';
+            wrap.style.opacity = '0';
+            setTimeout(() => wrap.remove(), 300);
+        }
+    })
+    .catch(() => { btn.disabled = false; alert('Delete failed, try again.'); });
+}
+</script>
 </div></div>
 </form></div>
 @endsection

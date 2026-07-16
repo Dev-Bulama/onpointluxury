@@ -80,7 +80,7 @@ class PaymentController extends Controller
             'paystack_reference'  => $reference,
             'amount'              => $data['data']['amount'] / 100,
             'currency'            => $data['data']['currency'],
-            'channel'             => $data['data']['channel'],
+            'payment_channel'     => $data['data']['channel'] ?? 'card',
             'status'              => 'success',
             'paid_at'             => now(),
             'gateway_response'    => $data['data']['gateway_response'] ?? 'Approved',
