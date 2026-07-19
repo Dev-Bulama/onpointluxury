@@ -154,6 +154,10 @@
            class="sidebar-link {{ request()->routeIs('admin.settings.general*') ? 'active' : '' }}">
             <i class="fas fa-cog w-4 text-center"></i> General
         </a>
+        <a href="{{ route('admin.settings.homepage') }}"
+           class="sidebar-link {{ request()->routeIs('admin.settings.homepage*') ? 'active' : '' }}">
+            <i class="fas fa-home w-4 text-center"></i> Homepage
+        </a>
         <a href="{{ route('admin.settings.smtp') }}"
            class="sidebar-link {{ request()->routeIs('admin.settings.smtp*') ? 'active' : '' }}">
             <i class="fas fa-envelope-open-text w-4 text-center"></i> SMTP Email

@@ -2,10 +2,11 @@
 @section('title', 'Onpointluxury — Premium Apartment & Hotel Bookings in Nigeria')
 
 @section('content')
-
-<!-- HERO SECTION -->
 @php
-$heroSlides = json_decode(\App\Models\Setting::get('hero_slides', '[]'), true);
+use App\Models\Setting;
+
+// Hero
+$heroSlides = json_decode(Setting::get('hero_slides', '[]'), true);
 if (empty($heroSlides)) {
     $heroSlides = [
         ['url' => 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=1600', 'caption' => ''],
@@ -13,7 +14,44 @@ if (empty($heroSlides)) {
         ['url' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600', 'caption' => ''],
     ];
 }
+$heroBadge    = Setting::get('hero_badge', "Nigeria's #1 Luxury Booking Platform");
+$heroTitleRaw = Setting::get('hero_title', 'Find Your Perfect Luxury Stay in Nigeria');
+$heroSubtitle = Setting::get('hero_subtitle', 'Premium apartments, hotel suites, and serviced residences in Lagos, Abuja & Port Harcourt. Book securely, stay luxuriously.');
+
+// Hero title: split on | for amber highlight
+$heroParts = explode('|', $heroTitleRaw, 2);
+
+// Section toggles
+$showTypes    = Setting::get('section_types_show', '1') == '1';
+$showFeatured = Setting::get('section_featured_show', '1') == '1';
+$showWhy      = Setting::get('section_why_show', '1') == '1';
+$showLatest   = Setting::get('section_latest_show', '1') == '1';
+$showCta      = Setting::get('section_cta_show', '1') == '1';
+
+// Section texts
+$typesTitle    = Setting::get('section_types_title', 'Browse by Type');
+$typesSub      = Setting::get('section_types_subtitle', "Find exactly the kind of stay you're looking for");
+$featLabel     = Setting::get('section_featured_label', 'Hand-Picked');
+$featTitle     = Setting::get('section_featured_title', 'Featured Properties');
+$latestLabel   = Setting::get('section_latest_label', 'Available Now');
+$latestTitle   = Setting::get('section_latest_title', 'Latest Properties');
+$whyTitle      = Setting::get('section_why_title', 'The Onpointluxury Difference');
+$whySub        = Setting::get('section_why_subtitle', 'Why Choose Us');
+$ctaTitle      = Setting::get('section_cta_title', 'Ready to Book Your Luxury Stay?');
+$ctaSub        = Setting::get('section_cta_subtitle', 'Browse our curated collection and book securely online in minutes. Or chat with us directly on WhatsApp.');
+$ctaBtn1       = Setting::get('section_cta_btn1_text', 'Browse Properties');
+$ctaBtn2       = Setting::get('section_cta_btn2_text', 'WhatsApp Us');
+
+$defaultFeatures = [
+    ['icon'=>'fas fa-shield-alt','title'=>'Verified Properties','desc'=>'Every property is personally inspected and verified to meet our international quality standards.'],
+    ['icon'=>'fas fa-lock','title'=>'Secure Payments','desc'=>"All transactions are processed through Paystack, Nigeria's most trusted payment gateway."],
+    ['icon'=>'fab fa-whatsapp','title'=>'WhatsApp Support','desc'=>'24/7 direct support via WhatsApp. Real humans, instant responses, no bots.'],
+    ['icon'=>'fas fa-star','title'=>'Best Price Guarantee','desc'=>"Find a lower price elsewhere? We'll match it. No questions asked."],
+];
+$whyFeatures = json_decode(Setting::get('section_why_features', '[]'), true) ?: $defaultFeatures;
 @endphp
+
+<!-- HERO SECTION -->
 <section class="relative bg-slate-900 min-h-[88vh] flex items-center overflow-hidden"
     x-data="{
         idx: 0,
@@ -43,14 +81,16 @@ if (empty($heroSlides)) {
     <div class="relative z-20 max-w-7xl mx-auto px-4 py-24 w-full">
         <div class="max-w-3xl mb-10">
             <div class="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-500/40 text-amber-300 text-sm px-4 py-2 rounded-full mb-6">
-                <i class="fas fa-star text-amber-400"></i> Nigeria's #1 Luxury Booking Platform
+                <i class="fas fa-star text-amber-400"></i> {{ $heroBadge }}
             </div>
             <h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-4">
-                Find Your Perfect <span class="text-amber-400">Luxury Stay</span> in Nigeria
+                @if(count($heroParts) === 2)
+                    {{ $heroParts[0] }}<span class="text-amber-400">{{ $heroParts[1] }}</span>
+                @else
+                    {{ $heroTitleRaw }}
+                @endif
             </h1>
-            <p class="text-lg text-gray-300 leading-relaxed">
-                Premium apartments, hotel suites, and serviced residences in Lagos, Abuja & Port Harcourt. Book securely, stay luxuriously.
-            </p>
+            <p class="text-lg text-gray-300 leading-relaxed">{{ $heroSubtitle }}</p>
         </div>
 
         <!-- Search Card -->
@@ -117,11 +157,12 @@ if (empty($heroSlides)) {
 </section>
 
 <!-- PROPERTY TYPES -->
+@if($showTypes)
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-10">
-            <h2 class="text-3xl font-black text-slate-900">Browse by Type</h2>
-            <p class="text-gray-500 mt-2">Find exactly the kind of stay you're looking for</p>
+            <h2 class="text-3xl font-black text-slate-900">{{ $typesTitle }}</h2>
+            <p class="text-gray-500 mt-2">{{ $typesSub }}</p>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             @foreach($propertyTypes->take(10) as $type)
@@ -135,14 +176,16 @@ if (empty($heroSlides)) {
         </div>
     </div>
 </section>
+@endif
 
 <!-- FEATURED PROPERTIES -->
+@if($showFeatured && $featuredProperties->count())
 <section class="py-16">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-end justify-between mb-10">
             <div>
-                <p class="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-1">Hand-Picked</p>
-                <h2 class="text-3xl font-black text-slate-900">Featured Properties</h2>
+                <p class="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-1">{{ $featLabel }}</p>
+                <h2 class="text-3xl font-black text-slate-900">{{ $featTitle }}</h2>
             </div>
             <a href="{{ route('properties.index') }}" class="text-sm font-medium text-slate-600 hover:text-amber-500 flex items-center gap-1">
                 View All <i class="fas fa-arrow-right text-xs"></i>
@@ -155,24 +198,21 @@ if (empty($heroSlides)) {
         </div>
     </div>
 </section>
+@endif
 
-<!-- WHY BOOK WITH US -->
+<!-- WHY CHOOSE US -->
+@if($showWhy)
 <section class="py-20 bg-slate-900">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-14">
-            <p class="text-amber-400 font-semibold text-sm uppercase tracking-wider mb-2">Why Choose Us</p>
-            <h2 class="text-3xl font-black text-white">The Onpointluxury Difference</h2>
+            <p class="text-amber-400 font-semibold text-sm uppercase tracking-wider mb-2">{{ $whySub }}</p>
+            <h2 class="text-3xl font-black text-white">{{ $whyTitle }}</h2>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            @foreach([
-                ['icon'=>'fas fa-shield-alt','color'=>'amber','title'=>'Verified Properties','desc'=>'Every property is personally inspected and verified to meet our international quality standards.'],
-                ['icon'=>'fas fa-lock','color'=>'green','title'=>'Secure Payments','desc'=>'All transactions are processed through Paystack, Nigeria\'s most trusted payment gateway.'],
-                ['icon'=>'fab fa-whatsapp','color'=>'green','title'=>'WhatsApp Support','desc'=>'24/7 direct support via WhatsApp. Real humans, instant responses, no bots.'],
-                ['icon'=>'fas fa-star','color'=>'amber','title'=>'Best Price Guarantee','desc'=>'Find a lower price elsewhere? We\'ll match it. No questions asked.'],
-            ] as $feature)
+            @foreach($whyFeatures as $feature)
             <div class="text-center">
-                <div class="w-14 h-14 bg-{{ $feature['color'] }}-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i class="{{ $feature['icon'] }} text-{{ $feature['color'] }}-400 text-2xl"></i>
+                <div class="w-14 h-14 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="{{ $feature['icon'] }} text-amber-400 text-2xl"></i>
                 </div>
                 <h3 class="font-bold text-white mb-2">{{ $feature['title'] }}</h3>
                 <p class="text-sm text-gray-400 leading-relaxed">{{ $feature['desc'] }}</p>
@@ -181,14 +221,16 @@ if (empty($heroSlides)) {
         </div>
     </div>
 </section>
+@endif
 
-<!-- ALL PROPERTIES -->
+<!-- LATEST PROPERTIES -->
+@if($showLatest)
 <section class="py-16">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-end justify-between mb-10">
             <div>
-                <p class="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-1">Available Now</p>
-                <h2 class="text-3xl font-black text-slate-900">Latest Properties</h2>
+                <p class="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-1">{{ $latestLabel }}</p>
+                <h2 class="text-3xl font-black text-slate-900">{{ $latestTitle }}</h2>
             </div>
             <a href="{{ route('properties.index') }}" class="text-sm font-medium text-slate-600 hover:text-amber-500 flex items-center gap-1">
                 View All <i class="fas fa-arrow-right text-xs"></i>
@@ -201,99 +243,25 @@ if (empty($heroSlides)) {
         </div>
     </div>
 </section>
-
-<!-- TESTIMONIALS -->
-@if($testimonials->count())
-<section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="text-center mb-12">
-            <p class="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">Guest Reviews</p>
-            <h2 class="text-3xl font-black text-slate-900">What Our Guests Say</h2>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($testimonials->take(6) as $t)
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div class="flex items-center gap-1 mb-3">
-                    @for($i=1;$i<=5;$i++)
-                    <i class="fas fa-star text-sm {{ $i <= $t->rating ? 'text-amber-400' : 'text-gray-200' }}"></i>
-                    @endfor
-                </div>
-                <p class="text-gray-700 text-sm leading-relaxed mb-4 italic">"{{ $t->comment }}"</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">{{ substr($t->name, 0, 1) }}</span>
-                    </div>
-                    <div>
-                        <p class="font-semibold text-sm text-slate-800">{{ $t->name }}</p>
-                        <p class="text-xs text-gray-400">{{ $t->title }}</p>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
-
-<!-- BLOG SECTION -->
-@if($blogPosts->count())
-<section class="py-16">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-end justify-between mb-10">
-            <div>
-                <p class="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-1">Insights</p>
-                <h2 class="text-3xl font-black text-slate-900">From Our Blog</h2>
-            </div>
-            <a href="{{ route('blog.index') }}" class="text-sm font-medium text-slate-600 hover:text-amber-500 flex items-center gap-1">
-                All Articles <i class="fas fa-arrow-right text-xs"></i>
-            </a>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach($blogPosts as $post)
-            <a href="{{ route('blog.show', $post->slug) }}" class="group">
-                <div class="bg-slate-200 rounded-2xl overflow-hidden h-48 mb-4">
-                    @if($post->featured_image)
-                    <img src="{{ asset('storage/'.$post->featured_image) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    @else
-                    <div class="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                        <i class="fas fa-newspaper text-white text-4xl opacity-50"></i>
-                    </div>
-                    @endif
-                </div>
-                <span class="text-xs text-amber-500 font-semibold uppercase">{{ $post->category }}</span>
-                <h3 class="font-bold text-slate-900 mt-1 group-hover:text-amber-500 transition-colors leading-tight">{{ $post->title }}</h3>
-                <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $post->excerpt }}</p>
-                <p class="text-xs text-gray-400 mt-2">{{ $post->published_at?->format('d M Y') }}</p>
-            </a>
-            @endforeach
-        </div>
-    </div>
-</section>
 @endif
 
 <!-- CTA SECTION -->
+@if($showCta)
 <section class="py-20 bg-amber-500">
     <div class="max-w-3xl mx-auto px-4 text-center">
-        <h2 class="text-3xl font-black text-white mb-4">Ready to Book Your Luxury Stay?</h2>
-        <p class="text-amber-100 mb-8">Browse our curated collection and book securely online in minutes. Or chat with us directly on WhatsApp.</p>
+        <h2 class="text-3xl font-black text-white mb-4">{{ $ctaTitle }}</h2>
+        <p class="text-amber-100 mb-8">{{ $ctaSub }}</p>
         <div class="flex flex-wrap gap-4 justify-center">
             <a href="{{ route('properties.index') }}" class="bg-white text-amber-600 font-bold px-8 py-3 rounded-xl hover:bg-amber-50 transition-colors">
-                Browse Properties
+                {{ $ctaBtn1 }}
             </a>
             <a href="https://wa.me/{{ \App\Models\Setting::get('whatsapp_number','2348012345678') }}" target="_blank"
                class="bg-green-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-green-700 transition-colors flex items-center gap-2">
-                <i class="fab fa-whatsapp text-lg"></i> WhatsApp Us
+                <i class="fab fa-whatsapp text-lg"></i> {{ $ctaBtn2 }}
             </a>
         </div>
     </div>
 </section>
+@endif
 
 @endsection
-@push('scripts')
-<script>
-document.getElementById('hero_checkin')?.addEventListener('change', function() {
-    const checkout = document.getElementById('hero_checkout');
-    if(checkout) checkout.min = this.value;
-});
-</script>
-@endpush

@@ -115,6 +115,27 @@ class SettingsController extends Controller {
         return back()->with('success','Script settings updated.');
     }
     
+    public function homepage() {
+        $settings = Setting::where('group','homepage')->pluck('value','key');
+        return view('admin.settings.homepage', compact('settings'));
+    }
+
+    public function updateHomepage(Request $request) {
+        $fields = [
+            'hero_badge','hero_title','hero_subtitle',
+            'section_types_show','section_types_title','section_types_subtitle',
+            'section_featured_show','section_featured_label','section_featured_title',
+            'section_why_show','section_why_title','section_why_subtitle','section_why_features',
+            'section_latest_show','section_latest_label','section_latest_title',
+            'section_cta_show','section_cta_title','section_cta_subtitle',
+            'section_cta_btn1_text','section_cta_btn2_text',
+        ];
+        foreach ($fields as $field) {
+            Setting::set($field, $request->input($field), 'homepage');
+        }
+        return back()->with('success','Homepage settings updated.');
+    }
+
     public function seo() {
         $settings = Setting::where('group','seo')->pluck('value','key');
         return view('admin.settings.seo', compact('settings'));

@@ -122,6 +122,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Settings
     Route::get('/settings/general', [AdminSettings::class, 'general'])->name('settings.general');
     Route::post('/settings/general', [AdminSettings::class, 'updateGeneral'])->name('settings.general.update');
+    Route::get('/settings/homepage', [AdminSettings::class, 'homepage'])->name('settings.homepage');
+    Route::post('/settings/homepage', [AdminSettings::class, 'updateHomepage'])->name('settings.homepage.update');
     Route::get('/settings/smtp', [AdminSettings::class, 'smtp'])->name('settings.smtp');
     Route::post('/settings/smtp', [AdminSettings::class, 'updateSmtp'])->name('settings.smtp.update');
     Route::get('/settings/paystack', [AdminSettings::class, 'paystack'])->name('settings.paystack');

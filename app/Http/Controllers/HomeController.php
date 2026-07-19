@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\{Property, PropertyType, Testimonial, BlogPost, Booking, User};
+use App\Models\{Property, PropertyType, Booking, User};
 
 class HomeController extends Controller
 {
@@ -21,12 +21,6 @@ class HomeController extends Controller
             ->having('properties_count', '>', 0)
             ->take(10)->get();
 
-        $testimonials = Testimonial::where('is_active', true)
-            ->orderBy('sort_order')->take(6)->get();
-
-        $blogPosts = BlogPost::where('is_published', true)
-            ->latest('published_at')->take(3)->get();
-
         $stats = [
             'properties' => Property::where('status', 'published')->count() ?: 50,
             'bookings'   => Booking::count() ?: 200,
@@ -35,8 +29,7 @@ class HomeController extends Controller
         ];
 
         return view('frontend.home', compact(
-            'featuredProperties', 'allProperties', 'propertyTypes',
-            'testimonials', 'blogPosts', 'stats'
+            'featuredProperties', 'allProperties', 'propertyTypes', 'stats'
         ));
     }
 }
