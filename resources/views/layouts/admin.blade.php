@@ -119,6 +119,10 @@
 
         <!-- Content -->
         <div class="sidebar-section">Content</div>
+        <a href="{{ route('admin.hero-slides.index') }}"
+           class="sidebar-link {{ request()->routeIs('admin.hero-slides.*') ? 'active' : '' }}">
+            <i class="fas fa-sliders-h w-4 text-center"></i> Hero Slides
+        </a>
         <a href="{{ route('admin.pages.index') }}"
            class="sidebar-link {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">
             <i class="fas fa-file-alt w-4 text-center"></i> Pages

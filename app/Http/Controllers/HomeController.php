@@ -1,12 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\{Property, PropertyType, Booking, User};
+use App\Models\{Property, PropertyType, Booking, User, HeroSlide};
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        $heroSlides = HeroSlide::active()->get();
+
         $featuredProperties = Property::with(['propertyType', 'propertyCategory', 'images'])
             ->where('status', 'published')
             ->where('is_featured', true)
@@ -22,14 +25,14 @@ class HomeController extends Controller
             ->take(10)->get();
 
         $stats = [
-            'properties' => Property::where('status', 'published')->count() ?: 50,
+            'properties' => Property::where('status', 'published')->count() ?: 12,
             'bookings'   => Booking::count() ?: 200,
             'clients'    => User::where('role', 'client')->count() ?: 150,
             'cities'     => 5,
         ];
 
         return view('frontend.home', compact(
-            'featuredProperties', 'allProperties', 'propertyTypes', 'stats'
+            'heroSlides', 'featuredProperties', 'allProperties', 'propertyTypes', 'stats'
         ));
     }
 }

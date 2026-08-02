@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\{LoginController, RegisterController, ForgotPasswo
 use App\Http\Controllers\{HomeController, PropertyController, BookingController, PaymentController, ContactController, BlogController, FaqController, PageController, FavoriteController};
 use App\Http\Controllers\Client\{DashboardController as ClientDashboard, BookingController as ClientBookingController, ProfileController as ClientProfile, FavoriteController as ClientFavorite};
 use App\Http\Controllers\Manager\{DashboardController as ManagerDashboard, PropertyController as ManagerProperty, BookingController as ManagerBooking};
-use App\Http\Controllers\Admin\{DashboardController as AdminDashboard, PropertyController as AdminProperty, BookingController as AdminBooking, UserController as AdminUser, SettingsController as AdminSettings, BlogController as AdminBlog, FaqController as AdminFaq, TestimonialController as AdminTestimonial, ReviewController as AdminReview, PageController as AdminPage, MenuController as AdminMenu, PaymentController as AdminPayment, RoomController as AdminRoom};
+use App\Http\Controllers\Admin\{DashboardController as AdminDashboard, PropertyController as AdminProperty, BookingController as AdminBooking, UserController as AdminUser, SettingsController as AdminSettings, BlogController as AdminBlog, FaqController as AdminFaq, TestimonialController as AdminTestimonial, ReviewController as AdminReview, PageController as AdminPage, MenuController as AdminMenu, PaymentController as AdminPayment, RoomController as AdminRoom, HeroSlideController as AdminHeroSlide};
 
 // Guest / Auth Routes
 Route::middleware('guest')->group(function () {
@@ -75,6 +75,11 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->name('manager.')->gro
 // Admin Dashboard
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+
+    // Hero Slides
+    Route::resource('hero-slides', AdminHeroSlide::class)->parameters(['hero-slides' => 'heroSlide']);
+    Route::post('/hero-slides/reorder', [AdminHeroSlide::class, 'reorder'])->name('hero-slides.reorder');
+    Route::post('/hero-slides/{heroSlide}/toggle', [AdminHeroSlide::class, 'toggleActive'])->name('hero-slides.toggle');
 
     // Properties
     Route::resource('properties', AdminProperty::class);
