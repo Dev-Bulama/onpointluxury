@@ -374,53 +374,41 @@ $whyFeatures = json_decode(Setting::get('section_why_features', '[]'), true) ?: 
                 </div>
             </div>
 
-            {{-- Row 2: steppers --}}
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                {{-- Guests --}}
-                <div>
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <i class="fas fa-users text-gray-400 text-sm"></i>
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Guests</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="step('guests',-1)"
-                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">−</button>
-                        <span class="flex-1 text-center text-sm font-semibold text-gray-800" x-text="guests + ' Person' + (guests > 1 ? 's' : '')"></span>
-                        <button type="button" @click="step('guests', 1)"
-                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">+</button>
-                    </div>
-                </div>
+            {{-- Row 2: steppers — stacked on mobile, 3-col on sm+ --}}
+            <div class="mb-6 space-y-3 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
 
-                {{-- Beds --}}
-                <div>
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <i class="fas fa-bed text-gray-400 text-sm"></i>
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Beds</span>
+                @foreach([
+                    ['field'=>'guests', 'icon'=>'fa-users',  'label'=>'Guests', 'suffix'=>true],
+                    ['field'=>'beds',   'icon'=>'fa-bed',    'label'=>'Beds',   'suffix'=>false],
+                    ['field'=>'baths',  'icon'=>'fa-bath',   'label'=>'Baths',  'suffix'=>false],
+                ] as $s)
+                {{-- Mobile: full-width row with label left, stepper right --}}
+                {{-- Desktop: stacked label above stepper --}}
+                <div class="flex items-center justify-between sm:block border border-gray-100 sm:border-0 rounded-lg sm:rounded-none px-3 py-2 sm:p-0">
+                    {{-- Label --}}
+                    <div class="flex items-center gap-2 sm:mb-2">
+                        <i class="fas {{ $s['icon'] }} text-gray-400 text-sm"></i>
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ $s['label'] }}</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="step('beds',-1)"
-                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">−</button>
-                        <span class="flex-1 text-center text-sm font-semibold text-gray-800" x-text="beds"></span>
-                        <button type="button" @click="step('beds', 1)"
-                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">+</button>
-                    </div>
-                </div>
-
-                {{-- Baths --}}
-                <div>
-                    <div class="flex items-center gap-2 mb-1.5">
-                        <i class="fas fa-bath text-gray-400 text-sm"></i>
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Baths</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="step('baths',-1)"
-                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">−</button>
-                        <span class="flex-1 text-center text-sm font-semibold text-gray-800" x-text="baths"></span>
-                        <button type="button" @click="step('baths', 1)"
-                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">+</button>
-                    </div>
-                </div>
-            </div>
+                    {{-- Stepper --}}
+                    <div class="flex items-center gap-3">
+                        <button type="button" @click="step('{{ $s['field'] }}',-1)"
+                                class="w-9 h-9 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center
+                                       text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition text-lg font-bold leading-none select-none">−</button>
+                        @if($s['suffix'])
+                        <span class="text-sm font-semibold text-gray-800 text-center min-w-[72px]"
+                              x-text="{{ $s['field'] }} + ' Person' + ({{ $s['field'] }} > 1 ? 's' : '')"></span>
+                        @else
+                        <span class="text-sm font-semibold text-gray-800 text-center min-w-[28px]"
+                              x-text="{{ $s['field'] }}"></span>
+                        @endif
+                        <button type="button" @click="step('{{ $s['field'] }}', 1)"
+                                class="w-9 h-9 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center
+                                       text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition text-lg font-bold leading-none select-none">+</button>
+                    </div>{{-- end stepper controls --}}
+                </div>{{-- end stepper item --}}
+                @endforeach
+            </div>{{-- end steppers grid --}}
 
             {{-- Search button --}}
             <button type="submit"
