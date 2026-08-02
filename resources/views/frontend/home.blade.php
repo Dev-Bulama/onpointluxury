@@ -205,7 +205,6 @@ $whyFeatures = json_decode(Setting::get('section_why_features', '[]'), true) ?: 
 <section class="opl-hero" id="hero"
          aria-label="Homepage hero slideshow"
          x-data="oplHero()"
-         x-init="init()"
          @mouseenter="pause()"
          @mouseleave="resume()"
          @focusin="pause()"

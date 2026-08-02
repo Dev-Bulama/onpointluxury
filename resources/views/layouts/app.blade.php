@@ -41,6 +41,7 @@
         @media (max-width: 767px) { body { padding-bottom: 4rem; } }
     </style>
     {!! \App\Models\Setting::get('header_scripts') !!}
+    @stack('head')
 </head>
 <body class="font-sans bg-white text-gray-900" x-data="{ mobileMenu: false }">
 
