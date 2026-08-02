@@ -58,6 +58,10 @@ class PropertyController extends Controller
             $query->where('bedrooms', '>=', $request->bedrooms);
         }
 
+        if ($request->filled('bathrooms')) {
+            $query->where('bathrooms', '>=', $request->bathrooms);
+        }
+
         if ($request->filled('amenities')) {
             $query->whereHas('amenities', function ($q) use ($request) {
                 $q->whereIn('amenities.id', (array) $request->amenities);

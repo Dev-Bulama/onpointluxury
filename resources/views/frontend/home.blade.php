@@ -333,67 +333,104 @@ $whyFeatures = json_decode(Setting::get('section_why_features', '[]'), true) ?: 
 
 </section>
 
-{{-- ═══════════════════════════ SEARCH FORM (below hero on all screens) ═══════════════════════════ --}}
-<div class="relative z-30 -mt-0 lg:-mt-14">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 lg:p-6">
-            <form action="{{ route('properties.index') }}" method="GET" id="hero-search-form">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
-                    <div class="sm:col-span-2 lg:col-span-1">
-                        <label for="hs-location" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Location</label>
-                        <div class="relative">
-                            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-sm pointer-events-none"></i>
-                            <input type="text" id="hs-location" name="location"
-                                   placeholder="Lagos, Abuja, Port Harcourt..."
-                                   value="{{ request('location') }}"
-                                   autocomplete="off"
-                                   class="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent transition">
-                        </div>
+{{-- ═══════════════════════════ SEARCH FORM ═══════════════════════════ --}}
+<div class="relative z-30 bg-white shadow-xl border-t border-gray-100"
+     x-data="{
+         guests:  {{ (int) request('guests',  2) }},
+         beds:    {{ (int) request('bedrooms', 1) }},
+         baths:   {{ (int) request('bathrooms', 1) }},
+         step(field, dir) {
+             const min = 1, max = field === 'guests' ? 20 : 10;
+             this[field] = Math.min(max, Math.max(min, this[field] + dir));
+         }
+     }">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
+        <form action="{{ route('properties.index') }}" method="GET" id="hero-search-form">
+            {{-- Hidden inputs carry the stepper values --}}
+            <input type="hidden" name="guests"    :value="guests">
+            <input type="hidden" name="bedrooms"  :value="beds">
+            <input type="hidden" name="bathrooms" :value="baths">
+
+            {{-- Row 1: dates --}}
+            <div class="grid grid-cols-2 gap-4 mb-5">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fas fa-calendar-alt text-gray-400 text-sm"></i>
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Check in</span>
                     </div>
-                    <div>
-                        <label for="hs-checkin" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Check-in</label>
-                        <div class="relative">
-                            <i class="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-sm pointer-events-none"></i>
-                            <input type="date" id="hs-checkin" name="check_in"
-                                   min="{{ date('Y-m-d') }}"
-                                   value="{{ request('check_in') }}"
-                                   class="w-full pl-9 pr-2 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent transition">
-                        </div>
+                    <input type="date" name="check_in"
+                           min="{{ date('Y-m-d') }}"
+                           value="{{ request('check_in') }}"
+                           class="w-full py-3 px-3 border border-gray-200 rounded-lg text-sm text-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent transition">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fas fa-calendar-check text-gray-400 text-sm"></i>
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Check out</span>
                     </div>
-                    <div>
-                        <label for="hs-checkout" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Check-out</label>
-                        <div class="relative">
-                            <i class="fas fa-calendar-check absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-sm pointer-events-none"></i>
-                            <input type="date" id="hs-checkout" name="check_out"
-                                   value="{{ request('check_out') }}"
-                                   class="w-full pl-9 pr-2 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent transition">
-                        </div>
+                    <input type="date" name="check_out"
+                           value="{{ request('check_out') }}"
+                           class="w-full py-3 px-3 border border-gray-200 rounded-lg text-sm text-gray-700 focus:ring-2 focus:ring-amber-400 focus:border-transparent transition">
+                </div>
+            </div>
+
+            {{-- Row 2: steppers --}}
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                {{-- Guests --}}
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fas fa-users text-gray-400 text-sm"></i>
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Guests</span>
                     </div>
-                    <div>
-                        <label for="hs-guests" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Guests</label>
-                        <div class="relative">
-                            <i class="fas fa-users absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-sm pointer-events-none"></i>
-                            <select id="hs-guests" name="guests"
-                                    class="w-full pl-9 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent transition appearance-none">
-                                @for($i = 1; $i <= 10; $i++)
-                                <option value="{{ $i }}" {{ request('guests', 1) == $i ? 'selected' : '' }}>
-                                    {{ $i }} {{ $i === 1 ? 'Guest' : 'Guests' }}
-                                </option>
-                                @endfor
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit"
-                                class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-5 rounded-xl
-                                       transition-all duration-200 flex items-center justify-center gap-2 text-sm
-                                       shadow-md shadow-amber-500/30 hover:-translate-y-0.5 min-h-[44px]">
-                            <i class="fas fa-search"></i> Search Stays
-                        </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="step('guests',-1)"
+                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">−</button>
+                        <span class="flex-1 text-center text-sm font-semibold text-gray-800" x-text="guests + ' Person' + (guests > 1 ? 's' : '')"></span>
+                        <button type="button" @click="step('guests', 1)"
+                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">+</button>
                     </div>
                 </div>
-            </form>
-        </div>
+
+                {{-- Beds --}}
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fas fa-bed text-gray-400 text-sm"></i>
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Beds</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="step('beds',-1)"
+                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">−</button>
+                        <span class="flex-1 text-center text-sm font-semibold text-gray-800" x-text="beds"></span>
+                        <button type="button" @click="step('beds', 1)"
+                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">+</button>
+                    </div>
+                </div>
+
+                {{-- Baths --}}
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fas fa-bath text-gray-400 text-sm"></i>
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Baths</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="step('baths',-1)"
+                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">−</button>
+                        <span class="flex-1 text-center text-sm font-semibold text-gray-800" x-text="baths"></span>
+                        <button type="button" @click="step('baths', 1)"
+                                class="w-8 h-8 flex-shrink-0 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition text-base font-bold leading-none">+</button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Search button --}}
+            <button type="submit"
+                    class="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold
+                           py-4 px-6 rounded-lg text-base transition-all duration-200
+                           flex items-center justify-center gap-2 min-h-[52px]">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </form>
     </div>
 </div>
 
